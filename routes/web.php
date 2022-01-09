@@ -49,4 +49,7 @@ Route::get('email/verify/{id}/{hash}', 'Auth\VerificationController@verify')->na
 Route::get('email/resend', 'Auth\VerificationController@resend')->name('verification.resend');
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::group(['middleware'=> 'auth'], function(){
 Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+Route::resource('/posts', PostController::class);
+});
