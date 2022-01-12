@@ -52,4 +52,6 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::group(['middleware'=> 'auth'], function(){
 Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 Route::resource('/posts', PostController::class);
+Route::resource('/profile', ProfileController::class);
+Route::post('/profile/edit', 'ProfileController@index')->route('profile.edit');
 });

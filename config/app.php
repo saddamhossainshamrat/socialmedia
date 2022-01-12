@@ -123,6 +123,13 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'columns'=> [
+        'f_name'=> 'fname',
+        'l_name'=> 'lname',
+        'birthday'=> 'b_day',
+        'email'=> 'email',
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
