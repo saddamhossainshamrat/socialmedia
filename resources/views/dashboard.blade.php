@@ -46,8 +46,8 @@
         <div class="post col-sm-12" id="post_1">
             <div class="row post-heading">
                 <div class="col-sm-12">
-                    <a href="profile.html">
-                        <img src="assets/imgs/2.jpg" class="profile-picture pull-left"/>
+                    <a href="{{ route('profile.index') }}">
+                        <img src="{{asset(auth()->user()->image?? '/images/no_user.png')}}" class="profile-picture pull-left"/>
                         &nbsp;
                         <span class="post-user-name">{{$post['user']->fname.' '.$post['user']->lname}}</span><br/>
                         &nbsp;
@@ -65,14 +65,47 @@
             </div>
             <div class="row post-action">
                 <ul class="post-action-menu">
-                    <li><a href="javascript:void(0);" class="text-mute" onclick="like(1);">Like</a></li>
-                    <li><a href="javascript:void(0);" class="text-mute" onclick="share(1);">Share</a></li>
-                    <li><a href="javascript:void(0);" class="text-mute" onclick="comment(1);">Comment</a></li>
+                    <li><a href="javascript:void(0);" class="text-mute" onclick="like({{$post['id']}});">Like</a></li>
+                    <li><a href="javascript:void(0);" class="text-mute" onclick="share({{$post['id']}});">Share</a></li>
+                    <li><a href="javascript:void(0);" class="text-mute" onclick="comment({{$post['id']}});">Comment</a></li>
                     <li class="pull-right"><a href="#" class="text-mute"><span id="post_share_count_1">{{ $post['shares'] }}</span> Shares</a></li>
                     <li class="pull-right"><a href="#" class="text-mute"><span id="post_comment_count_1">{{ $post['comments'] }}</span> Comments</a></li>
-                    <li class="pull-right"><a href="#" class="text-mute"><span id="post_like_count_1">{{ $post['likes'] }}</span> Likes</a></li>
+                    <li class="pull-right"><a href="#" class="text-mute"><span id="post_like_count_{{$post['id']}}">{{ $post['likes'] }}</span> Likes</a></li>
                 </ul>
             </div>
+
+            <div class="row post-comment" id="post_comment_1">
+                <div class="col-sm-1">
+                    <a href="{{ route('profile.index') }}">
+                        <img src="" class="profile-picture-small pull-left"/>
+                    </a>
+                </div>
+                <div class="col-sm-11">
+                    <a href="profile.html">
+                        <span class="post-user-name">Test Name</span>
+                    </a>
+                    Two little black birds sitting on a wall. One named Peter one named Paul. Fly away Peter, Fly away Paul. Come back Peter, come back Paul.
+                </div>
+
+                <form action="{{ route('saveComment') }}" method="POST">
+                    @csrf
+                    <div class="col-sm-1 form-group">
+                        <a href="profile.html">
+                            <img src="" class="profile-picture-small pull-left"/>
+                        </a>
+                    </div>
+
+                    <div class="col-sm-9 form-group">
+                        <textarea rows="1" name="comment" class="comment-text" placeholder="Add Comment" oninput="auto_height(this)"></textarea>
+                    </div>
+
+                    <div class="col-sm-1 form-group">
+                        <input type="hidden" name="post_id" value="{{ $post['id'] }}">
+                        <button type="submit" class="btn btn-success btn-xs">Comment</button>
+                    </div>
+                </form>
+            </div>
+
         </div>
 
         @endforeach
@@ -83,12 +116,33 @@
 
 @push('scripts')
 
+
 <script type="text/javascript">
-    function like(id){
-        var elem = document.getElementById("post_like_count_"+id);
+    function like(post_id){
+
+        var elem = document.getElementById("post_like_count_"+post_id);
         var count = parseInt(elem.innerHTML);
-        elem.innerHTML = count+1;
-        highlight(elem);
+
+        $.ajax({
+            url: '{{route('updateLikes')}}',
+            type: 'POST',
+            dataType: 'json',
+            async: false,
+            data: {
+                post_id: post_id,
+                _token: '{{csrf_token()}}'
+            },
+            success: function (data){
+                if(data.success){
+                    elem.innerHTML = count + parseInt(data.result);
+                    highlight(elem);
+                }
+            }
+
+        });
+
+
+
     }
     function share(id){
         var elem = document.getElementById("post_share_count_"+id);

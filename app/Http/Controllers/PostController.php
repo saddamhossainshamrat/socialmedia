@@ -43,13 +43,8 @@ class PostController extends Controller
 
          if($request->hasFile('image')){
              $file= $request->file('image');
+            $imageFinal= processImage($file);
 
-             $extension= $file->getClientOriginalExtension();
-             $fileName= 'image_' . time() . '.' . $extension;
-             $location= '/images/user_'. Auth::user()->id. '/';
-
-             $file->move(public_path().$location, $fileName);
-             $imageFinal= $location.$fileName;
          }
 
          Post::insert([
@@ -106,5 +101,37 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         //
+    }
+    public function updateLikes(Request $request){
+        $postId= $request->get('post_id') ?? '';
+        if($postId){
+            $post= Post::find($postId);
+            $likes= $post->likes;
+            $likes_array= json_decode($likes, true);
+
+            if(in_array(auth()->user()->id, $likes_array)){
+                $likes_array= array_diff($likes_array, [auth()->user()->id]);
+                $post->likes= json_encode($likes_array);
+                $post->save();
+
+                return json_encode([
+                   'success'=> true,
+                   'result'=> -1
+                ]);
+            } else{
+                array_push($likes_array, auth()->user()->id);
+                $post->likes= json_encode($likes_array);
+                $post->save();
+
+                return json_encode([
+                    'success'=> true,
+                    'result'=> 1
+                ]);
+            }
+        } else{
+            return json_encode([
+                'success'=> false
+            ]);
+        }
     }
 }

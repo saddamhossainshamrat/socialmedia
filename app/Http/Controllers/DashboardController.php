@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {
@@ -16,7 +17,7 @@ class DashboardController extends Controller
         foreach($allPosts as $post){
 
             $posts[]= array(
-
+                 'id'=> $post->id,
                 'status'=> $post->status?? '',
                 'photo'=> $post->photo?? '',
                 'likes'=> count(json_decode($post->likes)) ?? 0,

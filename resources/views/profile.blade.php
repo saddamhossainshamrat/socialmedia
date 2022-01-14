@@ -2,7 +2,8 @@
 
 @section('center')
     <div class="col-sm-6">
-        <form action="{{ route(profile.edit) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{route('profile.edit') }}" method="POST" enctype="multipart/form-data">
+            @csrf
             <div class="text-center" onmouseover="showUploadButton();" onmouseout="hideUploadButton();">
                 <div class="form-group button-image">
                     <img class="img-circle" src="{{asset(auth()->user()->image?? '/images/no_user.png')}}">

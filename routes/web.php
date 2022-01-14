@@ -53,5 +53,7 @@ Route::group(['middleware'=> 'auth'], function(){
 Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 Route::resource('/posts', PostController::class);
 Route::resource('/profile', ProfileController::class);
-Route::post('/profile/edit', 'ProfileController@index')->route('profile.edit');
+Route::post('/profile/edit', 'ProfileController@edit')->name('profile.edit');
+Route::post('update-likes', 'PostController@updateLikes')->name('updateLikes');
+Route::post('save-Comment', 'PostController@saveComment')->name('saveComment');
 });

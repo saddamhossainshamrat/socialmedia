@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class ProfileController extends Controller
 {
@@ -57,7 +60,24 @@ class ProfileController extends Controller
      */
     public function edit(Request $request)
     {
+       if($request->hasFile('image')){
+           $file= $request->file('image');
+           $imageFinal= processImage($file);
+       }
 
+       User::where('id', auth()->user()->id)->update([
+           'image'=> $imageFinal
+       ]);
+
+       Post::insert([
+        'status'=> auth()->user()->fname . ' has updated his profile picture ! ',
+        'photo'=> $request->hasFile('image') ? $imageFinal : '',
+        'likes'=> json_encode(array()),
+        'shares'=> json_encode(array()),
+        'user_id'=> Auth::user()->id,
+     ]);
+
+     return back();
     }
 
     /**
