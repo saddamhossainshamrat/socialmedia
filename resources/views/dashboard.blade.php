@@ -74,24 +74,34 @@
                 </ul>
             </div>
 
-            <div class="row post-comment" id="post_comment_1">
+            <div class="post-comment" id="post_comment_{{ $post['id'] }}" style="display:none;">
+                @php
+                    $all_comments= \App\Models\Comment::where('post_id', $post['id'])->get();
+                @endphp
+                @foreach ($all_comments as $comm )
+                 @php
+                     $user= \App\Models\User::where('id', $comm->user_id)->first();
+                 @endphp
+                 <div class="row">
                 <div class="col-sm-1">
                     <a href="{{ route('profile.index') }}">
-                        <img src="" class="profile-picture-small pull-left"/>
+                        <img src="{{ asset($user->image) }}" class="profile-picture-small pull-left"/>
                     </a>
                 </div>
                 <div class="col-sm-11">
                     <a href="profile.html">
-                        <span class="post-user-name">Test Name</span>
+                        <span class="post-user-name">{{ $user->fname.' '.$user->lname }}</span>
                     </a>
-                    Two little black birds sitting on a wall. One named Peter one named Paul. Fly away Peter, Fly away Paul. Come back Peter, come back Paul.
+                   {{ $comm->comment }}
                 </div>
-
+                 </div>
+                @endforeach
+                <div class="row">
                 <form action="{{ route('saveComment') }}" method="POST">
                     @csrf
                     <div class="col-sm-1 form-group">
                         <a href="profile.html">
-                            <img src="" class="profile-picture-small pull-left"/>
+                            <img src="{{asset(auth()->user()->image?? '/images/no_user.png')}}" class="profile-picture-small pull-left"/>
                         </a>
                     </div>
 
@@ -99,13 +109,13 @@
                         <textarea rows="1" name="comment" class="comment-text" placeholder="Add Comment" oninput="auto_height(this)"></textarea>
                     </div>
 
-                    <div class="col-sm-1 form-group">
+                    <div class="col-sm-2 form-group">
                         <input type="hidden" name="post_id" value="{{ $post['id'] }}">
                         <button type="submit" class="btn btn-success btn-xs">Comment</button>
                     </div>
                 </form>
             </div>
-
+            </div>
         </div>
 
         @endforeach
@@ -150,11 +160,14 @@
         elem.innerHTML = count+1;
         highlight(elem);
     }
-    function comment(id){
-        var elem = document.getElementById("post_comment_count_"+id);
-        var count = parseInt(elem.innerHTML);
-        elem.innerHTML = count+1;
-        highlight(elem);
+    function comment(post_id){
+        var elem = $('#post_comment_'+post_id);
+        if(elem.is("visible")){
+            elem.hide();
+        }else{
+            elem.show();
+        }
+
     }
     function highlight(elem){
         elem.style.color = "red";
